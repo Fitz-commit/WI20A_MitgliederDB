@@ -192,7 +192,7 @@ public class MitgliederDB implements Iterable<Record>
 
 		for(int i = numRecord;i <=getNumberOfRecords(); i++){
 			int o = block.moveRecordToPos(prevRecEndPos, nextRecord);
-			//TODO: Ende eines Block mit /u000 füllen;
+			//TODO: Ende eines Block mit /u000 füllen s;
 			if(o == -1){
 				break;
 			}
