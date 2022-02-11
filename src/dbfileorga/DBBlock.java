@@ -13,9 +13,19 @@ public class DBBlock implements Iterable<Record> {
 
 
 	public int moveRecordToPos(int goalPos, Record record){
-		return insertRecordAtPos(goalPos,record); //Returns the End Pos of the now moved Record
+		if(record == null){
+			return -1;
+		}
+
+		int x = insertRecordAtPos(goalPos,record);
+		return x; //Returns the End Pos of the now moved Record
 	}
 
+
+
+	public void clearData(int pos){
+		block[pos]= DEFCHAR;
+	}
 
 
 	/**
@@ -115,7 +125,7 @@ public class DBBlock implements Iterable<Record> {
 	
 
 
-	private int findEmptySpace(){
+	public int findEmptySpace(){
 		for (int i = 0; i <block.length;++i){
 			if (block[i] == DEFCHAR){
 				return i;
@@ -147,8 +157,12 @@ public class DBBlock implements Iterable<Record> {
 	public Iterator<Record> iterator() {
 		return new BlockIterator();
 	}
-	
-	
+
+	public void addRECDEL(int pos) {
+		block[pos] = '|';
+	}
+
+
 	private class BlockIterator implements Iterator<Record> {
 	    private int currRec=0;
  

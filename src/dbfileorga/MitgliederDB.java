@@ -1,8 +1,9 @@
 package dbfileorga;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Objects;
 
 public class MitgliederDB implements Iterable<Record>
 {
@@ -82,6 +83,54 @@ public class MitgliederDB implements Iterable<Record>
 	}
 
 
+	public int getStartPos(int RecordPosInBlock, DBBlock block){
+		int prevRecEndPos = 0;
+
+		for( int i = 1; i <RecordPosInBlock; i++){
+			prevRecEndPos += block.getRecord(i).length()+1;
+		}
+
+		return prevRecEndPos;
+	}
+
+	public int fillUpBlock(int startPos, int blockNum){
+		DBBlock currBlock = getBlock(blockNum);
+		if(currBlock.findEmptySpace() ==0){
+			currBlock.delete();
+			return 0;
+		}
+
+		DBBlock nextBlock = getBlock(blockNum+1);
+		Record nextRec;
+		int counter = 0; //Zählt wie viele Sätze vom nächsten block in den zu füllenden Block gesetzt wurden
+
+
+		for(int i = 1; i<= nextBlock.getNumberOfRecords(); i++){
+
+			nextRec = nextBlock.getRecord(i);
+
+			int o = currBlock.moveRecordToPos(startPos,nextRec);
+
+			if(o == -1){
+				cleanout(startPos,blockNum);
+				break;
+			}
+
+			startPos = startPos + nextRec.length();
+			counter++;
+		}
+
+		currBlock.addRECDEL(startPos);
+		return counter;
+	}
+
+	private void cleanout(int pos, int currBlockNum) {
+		DBBlock block = getBlock(currBlockNum);
+
+		for(int i = pos; i <  DBBlock.BLOCKSIZE; i++){
+			block.clearData(i);
+		}
+	}
 
 
 	/**
@@ -161,8 +210,8 @@ public class MitgliederDB implements Iterable<Record>
 	 * @param record
 	 * @return the record number of the inserted record
 	 */
-	public int insert(Record record){ // Soll hier in die File eingefügt werden oder nur appended ?
-		this.appendRecord(record);
+	public int insert(Record record){
+		this.appendRecord(record); //TODO: Hier prüfen ob es wirklich am letzten Block angesetzt wird
 		return getNumberOfRecords();
 	}
 	
@@ -171,40 +220,53 @@ public class MitgliederDB implements Iterable<Record>
 	 * @param numRecord number of the record to be deleted
 	 */
 	public void delete(int numRecord){
-		//TODO implement
-		int currBlock = getBlockNumOfRecord(numRecord);
-		int RecordPos =getPosInBlock(numRecord);
-		int prevRecEndPos ;
-
-		DBBlock block = getBlock(currBlock);
-		Record nextRecord= new Record("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab"); //TODO: Ein weg finden den richtigen Record zu bekommen
-
-
-
-		// Gets the Previous Record to find EndPos. EndPos = StartPos of New Record
-		if (RecordPos == 1){
-			prevRecEndPos = 0;
-
-		}
-		else{
-			prevRecEndPos = block.getRecord(getPosInBlock(numRecord-1)).length()+1;
-		}
-
-		for(int i = numRecord;i <=getNumberOfRecords(); i++){
-			int o = block.moveRecordToPos(prevRecEndPos, nextRecord);
-			//TODO: Ende eines Block mit /u000 füllen sa;
-			if(o == -1){
-				break;
-			}
-
-			prevRecEndPos = o + 1;
-
-		}
-
-
-
+		int currBlockNum = getBlockNumOfRecord(numRecord);
+		cleaner(1, currBlockNum);
+		int k = 0;
 	}
-	
+
+	private void cleaner(int RecordPosInBlock, int currBlockNum) {
+		DBBlock block = getBlock(currBlockNum);
+		int endPos = 0;
+
+
+		endPos = reorganizeInBlock(RecordPosInBlock, currBlockNum);
+
+
+		int amountOfRecords= fillUpBlock(endPos, currBlockNum);
+
+
+
+		if(amountOfRecords == 0 ){
+			cleanout(endPos,currBlockNum);
+		}else{
+			cleaner(1, currBlockNum+1);
+		}
+	}
+
+
+	private int reorganizeInBlock(int RecordPosInBlock, int BlockNum) { //RecordPos = Satz den ich überschreiben möchte
+
+		DBBlock block = getBlock(BlockNum);
+		int startPos = getStartPos(RecordPosInBlock, block); //StartPos = Start Pos des Satzes der zu Überschreiben ist
+
+
+		List<Record> list = new ArrayList<Record>();
+
+		for(int i = RecordPosInBlock+1; i <= block.getNumberOfRecords(); i++){
+			list.add(block.getRecord(i));
+		}
+
+		for (Record rec: list) {
+			int o = block.moveRecordToPos(startPos,rec);
+			startPos = o+1;
+		}
+
+		cleanout(startPos,BlockNum);
+		return startPos;
+	}
+
+
 	/**
 	 * Replaces the record at the specified position with the given one.
 	 * @param numRecord the position of the old record in the db

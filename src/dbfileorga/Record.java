@@ -6,7 +6,8 @@ public class Record {
 	
 	public final static char ATTDEL = ';';
 
-	private char [] record;
+
+    private char [] record;
 	
 	public Record (char [] record){
 		this.record = record;
@@ -78,5 +79,5 @@ public class Record {
 		return count;
 	}
 
-		
+
 }
