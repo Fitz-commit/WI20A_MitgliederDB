@@ -21,7 +21,7 @@ public class StartMitgliederDB {
 			System.out.println(db.read(newRecNum));
 			
 			//modify (ID95 Steffi Brahms wird zu ID 95 Steffi Bach)
-			db.modify(db.findPos("95"), new Record("95;3;13;Bach;Steffi;04.04.06;01.02.16;;5"));
+			db.modify(db.findPos("95"), new Record("95;3;13;Bach;Steffi;04.04.06;01.02.16;;5aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"));
 			System.out.println(db);
 				
 			//delete the record with Mitgliedsnummer 95 

@@ -17,8 +17,8 @@ public class DBBlock implements Iterable<Record> {
 			return -1;
 		}
 
-		int x = insertRecordAtPos(goalPos,record);
-		return x; //Returns the End Pos of the now moved Record
+		return insertRecordAtPos(goalPos,record);
+		//Returns the End Pos of the now moved Record
 	}
 
 

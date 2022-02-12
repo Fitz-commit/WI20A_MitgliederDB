@@ -222,7 +222,6 @@ public class MitgliederDB implements Iterable<Record>
 	public void delete(int numRecord){
 		int currBlockNum = getBlockNumOfRecord(numRecord);
 		cleaner(1, currBlockNum);
-		int k = 0;
 	}
 
 	private void cleaner(int RecordPosInBlock, int currBlockNum) {
@@ -273,29 +272,46 @@ public class MitgliederDB implements Iterable<Record>
 	 * @param record the new record
 	 * 
 	 */
-	public void modify(int numRecord, Record record){
+	public void modify(int numRecord, Record record) {
 		//TODO implement
-		DBBlock block = getBlock(getBlockNumOfRecord(numRecord));
-		int RecordPos =getPosInBlock(numRecord);
-		Record rec = null;
+		int blockNum = getBlockNumOfRecord(numRecord);
+		DBBlock block = getBlock(blockNum);
+		int RecordPosInBlock =getPosInBlock(numRecord);
+		int startpos = getStartPos(RecordPosInBlock,block);
+		int startPosInNextBlock =0;
 
-		// Gets the Previous Record to find EndPos. EndPos = StartPos of New Record
-		if (RecordPos == 1){
-			 rec = block.getRecord(getPosInBlock(numRecord));
+		List<Record> list = new ArrayList<Record>();
+
+		for(int i = RecordPosInBlock+1; i<=block.getNumberOfRecords(); i++){
+			list.add(block.getRecord(i));
 		}
-		else{
-			rec = block.getRecord(getPosInBlock(numRecord-1));
+
+		int pos = block.moveRecordToPos(startpos,record)+1;
+
+		if(pos == 0){//0 Because -1 + 1
+			System.out.println("Record is too long!");
 		}
 
 
+		for(Record rec : list){
+			int a = block.moveRecordToPos(pos, rec);
+			if(a == -1){
 
-		int length = rec.length();
+
+
+			}
+
+		}
+
+		cleanout(pos,blockNum);
 
 
 
 	}
 
-	
+
+
+
 	@Override
 	public Iterator<Record> iterator() {
 		return new DBIterator();
