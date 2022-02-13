@@ -106,22 +106,23 @@ public class MitgliederDB implements Iterable<Record>
 			int counter = 0; //Zählt wie viele Sätze vom nächsten block in den zu füllenden Block gesetzt wurden
 
 
+			int sign;
 			for (int i = 1; i <= nextBlock.getNumberOfRecords(); i++) {
 
 				nextRec = nextBlock.getRecord(i);
 
-				int o = currBlock.moveRecordToPos(startPos, nextRec);
+				sign = currBlock.moveRecordToPos(startPos, nextRec);
 
-				if (o == -1) {
+				if (sign == -1) {
 					cleanout(startPos, blockNum);
 					break;
 				}
 
-				startPos = startPos + nextRec.length();
+				startPos = sign +1;
 				counter++;
 			}
 
-			currBlock.addRECDEL(startPos);
+			currBlock.addRECDEL(startPos-1);
 			return counter;
 		}
 		return 0;
@@ -224,7 +225,9 @@ public class MitgliederDB implements Iterable<Record>
 	 */
 	public void delete(int numRecord){
 		int currBlockNum = getBlockNumOfRecord(numRecord);
-		cleaner(1, currBlockNum);
+		int RecordPosInBlock = getPosInBlock(numRecord);
+
+		cleaner(RecordPosInBlock, currBlockNum);
 	}
 
 	private void cleaner(int RecordPosInBlock, int currBlockNum) {
@@ -242,7 +245,9 @@ public class MitgliederDB implements Iterable<Record>
 		if(amountOfRecords == 0 ){
 			cleanout(endPos,currBlockNum);
 		}else{
-			cleaner(1, currBlockNum+1);
+			for(int i = 1; i <= amountOfRecords; i++){
+				cleaner(1, currBlockNum+1);
+			}
 		}
 	}
 
@@ -312,11 +317,10 @@ public class MitgliederDB implements Iterable<Record>
 
 		if(!TransferList.isEmpty()) {
 			writeRecordInNextBlock(TransferList, blockNum);
-
 			block.addRECDEL(b);
-			cleanout(b + 1, blockNum);
 		}
 
+		cleanout(b + 1, blockNum);
 
 
 
