@@ -273,40 +273,87 @@ public class MitgliederDB implements Iterable<Record>
 	 * 
 	 */
 	public void modify(int numRecord, Record record) {
-		//TODO implement
+		//TODO implement: Id darf nicht umgeändert werden
 		int blockNum = getBlockNumOfRecord(numRecord);
 		DBBlock block = getBlock(blockNum);
 		int RecordPosInBlock =getPosInBlock(numRecord);
 		int startpos = getStartPos(RecordPosInBlock,block);
-		int startPosInNextBlock =0;
 
-		List<Record> list = new ArrayList<Record>();
 
-		for(int i = RecordPosInBlock+1; i<=block.getNumberOfRecords(); i++){
-			list.add(block.getRecord(i));
+		List<Record> TransferList = new ArrayList<>();
+		List<Record> CopyofBlock = new ArrayList<>();
+		for (int i = RecordPosInBlock +1; i<= block.getNumberOfRecords(); i++) {
+			CopyofBlock.add(block.getRecord(i));
 		}
 
-		int pos = block.moveRecordToPos(startpos,record)+1;
+		int pos = block.moveRecordToPos(startpos,record);
 
-		if(pos == 0){//0 Because -1 + 1
-			System.out.println("Record is too long!");
+		if(pos == -1){
+			System.out.println("Record is too long!");//TODO:Frage stellen
 		}
 
 
-		for(Record rec : list){
-			int a = block.moveRecordToPos(pos, rec);
+
+		int a = pos;
+		for (Record rec: CopyofBlock) {
+			if(a !=-1){
+				a = block.moveRecordToPos(a+1,rec);
+			}
 			if(a == -1){
-
-
+				TransferList.add(rec);
 
 			}
+		}
+
+		writeRecordInNextBlock(TransferList, blockNum);
+
+
+
+
+	}
+
+	private int writeRecordInNextBlock(List<Record> TransferList, int blockNum) { //Returns pos in next Block
+		blockNum++;
+		DBBlock block = getBlock(blockNum);
+		int sign = 0;
+		int StartPos =0;
+
+		List<Record> Copy = new ArrayList<>();
+
+		for(Record rec: block){
+			Copy.add(rec);
+		}
+
+		Iterator<Record> CopyIt = Copy.iterator();
+
+
+		for (Record rec: TransferList) {
+			StartPos = block.moveRecordToPos(StartPos+1, rec);
+		}
+
+		cleanout(StartPos,blockNum);
+		TransferList.clear();
+		Record oldRec = null;
+		block.addRECDEL(StartPos);
+		sign = StartPos;
+		while(CopyIt.hasNext()){
+			oldRec = CopyIt.next();
+			if(sign != -1){
+				sign = block.moveRecordToPos(sign+1, oldRec);
+			}
+
+			if(sign == -1){
+				TransferList.add(oldRec);
+			}
+
 
 		}
 
-		cleanout(pos,blockNum);
+		if(!TransferList.isEmpty()){
+			writeRecordInNextBlock(TransferList,blockNum);
+		}
 
-
-
+		return 0;
 	}
 
 
