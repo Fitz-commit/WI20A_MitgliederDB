@@ -292,7 +292,7 @@ public class MitgliederDB implements Iterable<Record>
 		int pos = block.moveRecordToPos(startpos,record);
 
 		if(pos == -1){
-			System.out.println("Record is too long!");//TODO:Frage stellen
+			System.out.println("Record is too long!");//TODO:Frage stellen, Hier eventuell
 		}
 
 
@@ -310,10 +310,12 @@ public class MitgliederDB implements Iterable<Record>
 			}
 		}
 
-		writeRecordInNextBlock(TransferList, blockNum);
+		if(!TransferList.isEmpty()) {
+			writeRecordInNextBlock(TransferList, blockNum);
 
-		block.addRECDEL(b);
-		cleanout(b+1, blockNum);
+			block.addRECDEL(b);
+			cleanout(b + 1, blockNum);
+		}
 
 
 
