@@ -22,7 +22,7 @@ public class StartMitgliederDBOrdered {
 			System.out.println(db.read(db.findPos("95")));
 			
 			//delete the record with Mitgliedsnummer 97 (97;1;65;Krapp;Theo;10.10.87;01.03.07;115;25) 
-			db.delete(db.findPos("97"));
+			db.delete(db.findPos("13"));
 			System.out.println(db);
 			
 			
