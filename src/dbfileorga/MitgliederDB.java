@@ -281,24 +281,32 @@ public class MitgliederDB implements Iterable<Record>
 	 * 
 	 */
 	public void modify(int numRecord, Record record) {
-		//TODO implement: Id darf nicht umgeändert werden
+		//TODO implement: Hochziehen wen Satz verkleinert wird
 		int blockNum = getBlockNumOfRecord(numRecord);
 		DBBlock block = getBlock(blockNum);
 		int RecordPosInBlock =getPosInBlock(numRecord);
 		int startpos = getStartPos(RecordPosInBlock,block);
-
+		int pos = block.moveRecordToPos(startpos,record);
 
 		List<Record> TransferList = new ArrayList<>();
 		List<Record> CopyofBlock = new ArrayList<>();
+
+
+		fillUpBlock(block.findEmptySpace(), blockNum); // Wenn der Satz so modifiziert das der folgende Satz im nächsten Block noch reinpasst
+
+
 		for (int i = RecordPosInBlock +1; i<= block.getNumberOfRecords(); i++) {
 			CopyofBlock.add(block.getRecord(i));
 		}
 
-		int pos = block.moveRecordToPos(startpos,record);
 
+
+
+
+		//Wenn der letzte Satz modifiziert wird und zu groß wird ODER wenn von vornherein ein zu großer Satz eingestellt wird (>256 Zeichen)
 		if(pos == -1){
 			if(record.length() > DBBlock.BLOCKSIZE){
-				System.out.println("Record is too long!");//TODO:Frage stellen
+				System.out.println("Record is too long!");
 				return;
 			}
 
@@ -308,7 +316,7 @@ public class MitgliederDB implements Iterable<Record>
 
 			return;
 
-			//TODO: Was wenn letzte satz gemodifyt wird und zu lang ist ?
+
 
 		}
 
