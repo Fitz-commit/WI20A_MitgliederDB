@@ -302,6 +302,13 @@ public class MitgliederDB implements Iterable<Record>
 				return;
 			}
 
+			TransferList.add(record);
+			cleanout(getStartPos(RecordPosInBlock,block),blockNum);
+			writeRecordInNextBlock(TransferList, blockNum);
+
+			return;
+
+			//TODO: Was wenn letzte satz gemodifyt wird und zu lang ist ?
 
 		}
 
@@ -334,7 +341,7 @@ public class MitgliederDB implements Iterable<Record>
 		blockNum++;
 		DBBlock block = getBlock(blockNum);
 		int sign = 0;
-		int StartPos =0;
+		int StartPos =-1;
 
 		List<Record> Copy = new ArrayList<>();
 
@@ -347,6 +354,7 @@ public class MitgliederDB implements Iterable<Record>
 
 		for (Record rec: TransferList) {
 			StartPos = block.moveRecordToPos(StartPos+1, rec);
+
 		}
 
 		cleanout(StartPos,blockNum);
