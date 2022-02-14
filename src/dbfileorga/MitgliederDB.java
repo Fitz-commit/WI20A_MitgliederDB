@@ -297,12 +297,12 @@ public class MitgliederDB implements Iterable<Record>
 		int pos = block.moveRecordToPos(startpos,record);
 
 		if(pos == -1){
-			if(record.length() < DBBlock.BLOCKSIZE){
+			if(record.length() > DBBlock.BLOCKSIZE){
 				System.out.println("Record is too long!");//TODO:Frage stellen
+				return;
 			}
 
 
-			return;
 		}
 
 
