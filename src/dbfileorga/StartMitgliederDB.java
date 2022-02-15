@@ -9,7 +9,7 @@ public class StartMitgliederDB {
 			// TODO test your implementation with the following use cases  
 			
 			// read the a record number e.g. 32 (86;3;13;Brutt;Jasmin;12.12.04;01.01.16;;7,5)
-			Record rec = db.read(1);
+			Record rec = db.read(6);
 			System.out.println(rec);
 			
 			//find and read a record with a given Mitgliedesnummer e.g 95

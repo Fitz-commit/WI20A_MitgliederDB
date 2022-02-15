@@ -179,9 +179,17 @@ public class MitgliederDB implements Iterable<Record>
 	public Record read(int recNum){
 		Iterator<Record> it = iterator();
 		Record rec = null;
+		int counter = 1;
 
-		for (int i = 1; i<=recNum; i++){
-			rec = it.next();
+		while (it.hasNext()){
+
+			if(counter == recNum){
+				rec = it.next();
+				break;
+			}
+
+			it.next();
+			counter+= 1;
 		}
 
 		return rec;
@@ -281,7 +289,7 @@ public class MitgliederDB implements Iterable<Record>
 	 * 
 	 */
 	public void modify(int numRecord, Record record) {
-		//TODO implement: Hochziehen wen Satz verkleinert wird
+
 		int blockNum = getBlockNumOfRecord(numRecord);
 		DBBlock block = getBlock(blockNum);
 		int RecordPosInBlock =getPosInBlock(numRecord);
@@ -298,9 +306,6 @@ public class MitgliederDB implements Iterable<Record>
 		for (int i = RecordPosInBlock +1; i<= block.getNumberOfRecords(); i++) {
 			CopyofBlock.add(block.getRecord(i));
 		}
-
-
-
 
 
 		//Wenn der letzte Satz modifiziert wird und zu groß wird ODER wenn von vornherein ein zu großer Satz eingestellt wird (>256 Zeichen)
