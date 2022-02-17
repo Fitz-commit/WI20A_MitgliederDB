@@ -65,6 +65,7 @@ public class MitgliederDB implements Iterable<Record>
 	}
 
 
+	//Gibt die Position innerhalb des gesuchten Satznummer innerhalb eines Blockes an. Bsp. numRec = 10 bei 5 Sätzen pro Block liefert die Methode 5 zurück
 	public int getPosInBlock(int numRec){
 
 		int counter = 0;
@@ -82,7 +83,7 @@ public class MitgliederDB implements Iterable<Record>
 		return -1;
 	}
 
-
+	//Gibt die Start Position des Records anhand der Nummer innerhalb des Blockes an
 	public int getStartPos(int RecordPosInBlock, DBBlock block){
 		int prevRecEndPos = 0;
 
@@ -93,6 +94,7 @@ public class MitgliederDB implements Iterable<Record>
 		return prevRecEndPos;
 	}
 
+	//Zieht Records vom nächsten Block in den jetzigen sofern noch Platz vorhanden ist
 	public int fillUpBlock(int startPos, int blockNum){
 		DBBlock currBlock = getBlock(blockNum);
 		if(currBlock.findEmptySpace() ==0){
@@ -128,6 +130,7 @@ public class MitgliederDB implements Iterable<Record>
 		return 0;
 	}
 
+	//Setzt alle Positionen danach auf null bzw DEFCHAR
 	private void cleanout(int pos, int currBlockNum) {
 		DBBlock block = getBlock(currBlockNum);
 
@@ -223,7 +226,7 @@ public class MitgliederDB implements Iterable<Record>
 	 * @return the record number of the inserted record
 	 */
 	public int insert(Record record){
-		this.appendRecord(record); //TODO: Hier prüfen ob es wirklich am letzten Block angesetzt wird
+		this.appendRecord(record);
 		return getNumberOfRecords();
 	}
 	
@@ -239,7 +242,7 @@ public class MitgliederDB implements Iterable<Record>
 	}
 
 	private void cleaner(int RecordPosInBlock, int currBlockNum) {
-		DBBlock block = getBlock(currBlockNum);
+
 		int endPos = 0;
 
 
@@ -260,6 +263,7 @@ public class MitgliederDB implements Iterable<Record>
 	}
 
 
+	//Reorganisert Sätze innerhalb eines Blocks so das keine Lücken auftreten und der Speicherplatz optimiert ist
 	private int reorganizeInBlock(int RecordPosInBlock, int BlockNum) { //RecordPos = Satz den ich überschreiben möchte
 
 		DBBlock block = getBlock(BlockNum);
@@ -321,8 +325,6 @@ public class MitgliederDB implements Iterable<Record>
 
 			return;
 
-
-
 		}
 
 
@@ -350,6 +352,7 @@ public class MitgliederDB implements Iterable<Record>
 		cleanout(b + 1, blockNum);
 	}
 
+	//Schreibt Satz in den Nächsten Block.
 	private int writeRecordInNextBlock(List<Record> TransferList, int blockNum) { //Returns pos in next Block
 		blockNum++;
 		DBBlock block = getBlock(blockNum);

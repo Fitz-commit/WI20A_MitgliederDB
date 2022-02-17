@@ -12,13 +12,13 @@ public class DBBlock implements Iterable<Record> {
 	private char block[] = new char[BLOCKSIZE];
 
 
+	//Schreibt satz an die gewünschte Position
 	public int moveRecordToPos(int goalPos, Record record){
 		if(record == null){
 			return -1;
 		}
 
 		return insertRecordAtPos(goalPos,record);
-		//Returns the End Pos of the now moved Record
 	}
 
 
