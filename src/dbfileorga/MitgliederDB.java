@@ -298,7 +298,7 @@ public class MitgliederDB implements Iterable<Record>
 		DBBlock block = getBlock(blockNum);
 		int RecordPosInBlock =getPosInBlock(numRecord);
 		int startpos = getStartPos(RecordPosInBlock,block);
-		int pos = block.moveRecordToPos(startpos,record);
+
 
 		List<Record> TransferList = new ArrayList<>();
 		List<Record> CopyofBlock = new ArrayList<>();
@@ -311,6 +311,8 @@ public class MitgliederDB implements Iterable<Record>
 			CopyofBlock.add(block.getRecord(i));
 		}
 
+
+		int pos = block.moveRecordToPos(startpos,record);//Muss hier sein ansonsten gelangen Fragemente in den CopyofBlock. (Falls alter Satz > neuer Satz)
 
 		//Wenn der letzte Satz modifiziert wird und zu groß wird ODER wenn von vornherein ein zu großer Satz eingestellt wird (>256 Zeichen)
 		if(pos == -1){
